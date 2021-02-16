@@ -1,24 +1,60 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const { graphqlExpress, graphiqlExpress } = require('apollo-server-express')
-const { makeExecutableSchema } = require('graphql-tools')
-const { typeDefs, resolvers } = require('./graphql')
 
-const schema = makeExecutableSchema({
-  typeDefs,
-  resolvers
-})
+const express = require('express')
+const { ApolloServer, makeExecutableSchema } = require('apollo-server-express')
+const { createServer } = require('http')
+const { SubscriptionServer } = require('subscriptions-transport-ws')
+const bodyParser = require('body-parser')
+const cors = require('cors')
+const { execute, subscribe } = require('graphql')
+const typeDefs = require('./graphql/typeDefs')
+const resolvers = require('./graphql/resolvers')
 
 // Initialize the app
 const app = express()
+const PORT = 3000
 
-// The GraphQL endpoint
-app.use('/graphql', bodyParser.json(), graphqlExpress({ schema, playground: true }))
+app.use(bodyParser.json())
+app.use('*', cors({ origin: `http://localhost:${PORT}` }))
 
-// GraphiQL, a visual editor for queries
-app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }))
-
-// Start the server
-app.listen(3000, () => {
-  console.log('Go to http://localhost:3000/graphiql to run queries!')
+const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers,
+  playground: true,
+  subscriptions: {
+    path: '/subscriptions',
+    onConnect: (connectionParams, webSocket, context) => {
+      console.log('Client connected')
+    },
+    onDisconnect: (webSocket, context) => {
+      console.log('Client disconnected')
+    }
+  },
+  context: ({ req, connection }) => {
+    if (connection) { // Operation is a Subscription
+      // Obtain connectionParams-provided token from connection.context
+      const token = connection.context.authorization || ''
+      return { token }
+    } else { // Operation is a Query/Mutation
+      // Obtain header-provided token from req.headers
+      const token = req.headers.authorization || ''
+      return { token }
+    }
+  }
 })
+apolloServer.applyMiddleware({ app })
+
+const server = createServer(app)
+const subscriptionServer = new SubscriptionServer({
+  execute,
+  subscribe,
+  schema: makeExecutableSchema({ typeDefs, resolvers })
+}, {
+  server: server,
+  path: '/subscriptions',
+  onConnect: (connectionParams, webSocket, context) => {
+    console.log(connectionParams)
+    console.log(webSocket)
+    console.log(context)
+  }
+})
+server.listen(PORT, () => subscriptionServer)
