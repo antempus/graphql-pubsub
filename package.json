@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node -r dotenv/config src/app.js",
+    "start:prod": "node src/app.js",
     "start:watch": "nodemon src/app.js"
   },
   "keywords": [],
