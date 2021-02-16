@@ -14,7 +14,7 @@ const app = express()
 const PORT = 3000
 
 app.use(bodyParser.json())
-app.use('*', cors({ origin: `http://localhost:${PORT}` }))
+app.use('/', (req, res) => res.sendStatus(200))
 
 const apolloServer = new ApolloServer({
   typeDefs,
