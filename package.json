@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@azure/eventgrid": "^2.0.0",
+    "@azure/event-hubs": "^5.4.0",
     "@azure/service-bus": "^7.0.3",
     "amqplib": "^0.6.0",
     "apollo-server-express": "^2.21.0",
@@ -20,18 +21,17 @@
     "express": "^4.17.1",
     "graphql": "^15.5.0",
     "graphql-tools": "^7.0.3",
+    "graphql-amqp-subscriptions": "^1.1.1",
+    "graphql-redis-subscriptions": "^2.3.1",
     "rhea": "^1.0.24"
   },
   "devDependencies": {
-    "@azure/event-hubs": "^5.4.0",
     "dotenv": "^8.2.0",
     "eslint": "^7.19.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
-    "graphql-amqp-subscriptions": "^1.1.1",
-    "graphql-redis-subscriptions": "^2.3.1",
     "nodemon": "^2.0.7"
   }
 }
