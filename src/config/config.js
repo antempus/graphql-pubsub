@@ -1,6 +1,9 @@
 // List of required environment variables in local .env file
 const environmentVariables = [
-
+  'REDIS_HOST',
+  'REDIS_PORT',
+  'REDIS_PASSWORD',
+  'SB_QUEUE_CONN_STRING'
 ]
 
 // check that all environment variables are specified
