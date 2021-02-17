@@ -1,0 +1,35 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy container app to Azure Web App - rosteele-webapp-graphql
+
+on:
+  push:
+    branches:
+      - primary
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: 'ubuntu-latest'
+
+    steps:
+    - uses: actions/checkout@master
+
+    - uses: azure/docker-login@v1
+      with:
+        login-server: https://index.docker.io/v1/
+        username: ${{ secrets.AzureAppService_ContainerUsername_a07e5ab837c44941a169a06ce6f04465 }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_ff8e825e53ae4164a9bc1fba63339975 }}
+
+    - run: |
+        docker build . -t index.docker.io/${{ secrets.AzureAppService_ContainerUsername_a07e5ab837c44941a169a06ce6f04465 }}/antempus/graphql-pubsub:${{ github.sha }}
+        docker push index.docker.io/${{ secrets.AzureAppService_ContainerUsername_a07e5ab837c44941a169a06ce6f04465 }}/antempus/graphql-pubsub:${{ github.sha }}
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'rosteele-webapp-graphql'
+        slot-name: 'production'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_f66930d535a54c9eb05eb707c3741e83 }}
+        images: 'index.docker.io/${{ secrets.AzureAppService_ContainerUsername_a07e5ab837c44941a169a06ce6f04465 }}/antempus/graphql-pubsub:${{ github.sha }}'
