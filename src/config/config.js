@@ -3,7 +3,8 @@ const environmentVariables = [
   'REDIS_HOST',
   'REDIS_PORT',
   'REDIS_PASSWORD',
-  'SB_QUEUE_CONN_STRING'
+  'SB_TOPIC_CONN_STRING',
+  'SB_TOPIC'
 ]
 
 // check that all environment variables are specified

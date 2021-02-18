@@ -11,10 +11,10 @@ const resolvers = require('./graphql/resolvers')
 
 // Initialize the app
 const app = express()
-const PORT = 3000
+const PORT = process.env.port || 3000
 
 app.use(bodyParser.json())
-app.use('/', (req, res) => res.sendStatus(200))
+app.use('/health', (req, res) => res.sendStatus(200))
 
 const apolloServer = new ApolloServer({
   typeDefs,
@@ -57,4 +57,7 @@ const subscriptionServer = new SubscriptionServer({
     console.log(context)
   }
 })
-server.listen(PORT, () => subscriptionServer)
+server.listen(PORT, () => {
+  console.log(`Server listening on ${PORT} up`)
+  return subscriptionServer
+})
