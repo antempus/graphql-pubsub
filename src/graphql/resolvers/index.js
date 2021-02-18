@@ -1,7 +1,7 @@
 
 const { books, pubSub: { redis, servicebus } } = require('../data')
 const { withFilter } = require('graphql-subscriptions')
-const { env: { SB_TOPIC } } = process
+const { env: { SB_TOPIC, SB_SUBSCRIPTION } } = process
 const commentAddedResolver = function (payload, args) {
   console.log(payload)
   return payload
@@ -49,7 +49,7 @@ const resolvers = {
         const payload = body.toString()
         return payload
       },
-      subscribe: (_, args) => servicebus.createReceiver(SB_TOPIC).getMessageIterator()
+      subscribe: (_, args) => servicebus.createReceiver(SB_TOPIC, SB_SUBSCRIPTION).getMessageIterator()
     }
   }
 }
